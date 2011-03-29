@@ -3,7 +3,7 @@ SmartPacman
 
 Who, where and why?
 -------------------
-Developed by: Henrique Taunay, game enthusiast
+Developed by: Henrique Taunay, game enthusiast <br/>
 Student at PUC-Rio, who want's to get in the gamming business and just started taking it seriously
 
 Description

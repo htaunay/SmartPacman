@@ -63,11 +63,8 @@ namespace SmartPacMan
         protected override void Initialize()
         {
             Window.Title = "SmartPacMan";
-
-			//scene1.loadSceneFile( "mapok.txt" );
-			//scene1.loadSceneFile("mapnotok.txt");
-			//scene1.loadSceneFile("openmap.txt");
-			scene1.loadSceneFile("classic.txt");
+			
+			scene1.loadSceneFile("ClassicScene.txt");
 			sm.currentScene = scene1;
 
 			graphics.PreferredBackBufferWidth = scene1.map.width * SQUARE_SIZE;

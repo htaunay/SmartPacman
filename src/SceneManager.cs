@@ -73,12 +73,24 @@ namespace SmartPacMan
 		/// <summary>
 		/// Returns if the given space is empty or not.
 		/// </summary>
-		private bool checkSpace(Map.Pos space)
+		private bool hasWall(Map.Pos space)
 		{
-			if (currentScene.map.getSpaceType( space) != Map.SpaceType.Empty)
-				return false;
+			if (currentScene.map.getSpaceType( space) == Map.SpaceType.Wall)
+				return true;
 
-			return true;
+			return false;
+		}
+
+		private bool hasSomeone(Map.Pos pos)
+		{
+			if (currentScene.pacman.pos == pos)
+				return true;
+
+			foreach (Ghost ghost in currentScene.ghosts)
+				if (ghost.pos == pos)
+					return true;
+
+			return false;
 		}
 
 		/// <summary>
@@ -173,6 +185,53 @@ namespace SmartPacMan
 			}
 		}
 
+		//TODO
+		private void moveGhost(Ghost ghost, Pathfinder.Direction dir)
+		{
+			bool moved = false;
+
+			switch (dir)
+			{
+				case Pathfinder.Direction.Left:
+					if (!hasSomeone(ghost.pos - Map.unitx))
+					{
+						ghost.pos.x--;
+						moved = true;
+					}
+					break;
+
+				case Pathfinder.Direction.Right:
+					if (!hasSomeone(ghost.pos + Map.unitx))
+					{
+						ghost.pos.x++;
+						moved = true;
+					}
+					break;
+
+				case Pathfinder.Direction.Up:
+					if (!hasSomeone(ghost.pos - Map.unity))
+					{
+						ghost.pos.y--;
+						moved = true;
+					}
+					break;
+
+				case Pathfinder.Direction.Down:
+					if (!hasSomeone(ghost.pos + Map.unity))
+					{
+						ghost.pos.y++;
+						moved = true;
+					}
+					break;
+
+				default:
+					break;
+			}
+
+			if (moved)
+				ghost.lastMove = dir;
+		}
+
 		/// <summary>
 		/// Returns a instane of the SceneManager.
 		/// </summary>
@@ -231,11 +290,12 @@ namespace SmartPacMan
 		{
 			foreach (Ghost ghost in currentScene.ghosts)
 			{
+				// Got that bastard!!!
 				if (pacmanReached(ghost))
 				{
-					//ghost.pos.X = 4;
-					//ghost.pos.Y = 20;
+					// set on future respawn position
 				}
+				// Move torward pacman, almost there!!!
 				else if (ghost.getPathToPac() != null)
 				{
 					ghost.state = Ghost.GhostState.OK;
@@ -245,25 +305,26 @@ namespace SmartPacMan
 					switch (dir)
 					{
 						case Pathfinder.Direction.Left:
-							ghost.pos.x--;
+							moveGhost(ghost, Pathfinder.Direction.Left);
 							break;
 
 						case Pathfinder.Direction.Right:
-							ghost.pos.x++;
+							moveGhost(ghost, Pathfinder.Direction.Right);
 							break;
 
 						case Pathfinder.Direction.Up:
-							ghost.pos.y--;
+							moveGhost(ghost, Pathfinder.Direction.Up);
 							break;
 
 						case Pathfinder.Direction.Down:
-							ghost.pos.y++;
+							moveGhost(ghost, Pathfinder.Direction.Down);
 							break;
 
 						default:
 							break;
 					}
 				}
+				// Fuck..., no way to pacman
 				else
 					ghost.state = Ghost.GhostState.Pissed;
 			}
@@ -275,28 +336,28 @@ namespace SmartPacMan
 		/// <param name="ks">PC keyboard's current state.</param>
 		public void updatePacman(KeyboardState ks)
 		{
-			if (ks.IsKeyDown(Keys.Left) && checkSpace(currentScene.pacman.pos - Map.unitx))
+			if (ks.IsKeyDown(Keys.Left) && !hasWall(currentScene.pacman.pos - Map.unitx))
 			{
 				currentScene.pacman.pos.x--;
 				currentScene.pacman.lastMove = Pathfinder.Direction.Left;
 				currentScene.pacman.switchState();
 			}
 
-			if (ks.IsKeyDown(Keys.Right) && checkSpace(currentScene.pacman.pos + Map.unitx))
+			if (ks.IsKeyDown(Keys.Right) && !hasWall(currentScene.pacman.pos + Map.unitx))
 			{
 				currentScene.pacman.pos.x++;
 				currentScene.pacman.lastMove = Pathfinder.Direction.Right;
 				currentScene.pacman.switchState();
 			}
 
-			if (ks.IsKeyDown(Keys.Up) && checkSpace(currentScene.pacman.pos - Map.unity))
+			if (ks.IsKeyDown(Keys.Up) && !hasWall(currentScene.pacman.pos - Map.unity))
 			{
 				currentScene.pacman.pos.y--;
 				currentScene.pacman.lastMove = Pathfinder.Direction.Down;
 				currentScene.pacman.switchState();
 			}
 
-			if (ks.IsKeyDown(Keys.Down) && checkSpace(currentScene.pacman.pos + Map.unity))
+			if (ks.IsKeyDown(Keys.Down) && !hasWall(currentScene.pacman.pos + Map.unity))
 			{
 				currentScene.pacman.pos.y++;
 				currentScene.pacman.lastMove = Pathfinder.Direction.Up;

@@ -63,7 +63,7 @@ namespace SmartPacMan
         protected override void Initialize()
         {
             Window.Title = "SmartPacMan";
-			
+
 			scene1.loadSceneFile("ClassicScene.txt");
 			sm.currentScene = scene1;
 
